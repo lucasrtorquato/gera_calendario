@@ -3,267 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cronograma PPT - Layout Max</title>
+    <title>Cronograma Acadêmico Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
-            --primary: #1e40af; /* Azul forte para contraste */
+            --primary: #0f172a;
             --accent: #3b82f6;
-            --holiday: #dc2626; /* Vermelho vibrante */
-            --bg-neutral: #f1f5f9;
-            --text-dark: #0f172a;
+            --holiday: #dc2626;
+            --bg-page: #f1f5f9;
+            --success: #10b981;
         }
 
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #cbd5e1; /* Fundo cinza para destacar o "card" branco do print */
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Painel de Controle - Oculto no Print se desejar */
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-page); padding: 10px; color: #1e293b; margin: 0; }
+        
+        /* Área de Configuração - Responsiva */
         .config-area {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 900px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            background: white; padding: 20px; border-radius: 12px;
+            width: 100%; max-width: 1000px; margin: 0 auto 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-sizing: border-box;
         }
 
-        .input-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
+        .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
         .field { display: flex; flex-direction: column; gap: 4px; }
-        label { font-size: 12px; font-weight: bold; color: #475569; text-transform: uppercase; }
-        input, textarea { padding: 8px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 14px; }
+        label { font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase; }
+        input, textarea { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; }
 
-        .days-group {
-            grid-column: 1 / -1;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            padding: 10px;
-            background: #f8fafc;
-            border-radius: 8px;
-        }
+        .days-group { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .day-label { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; cursor: pointer; }
 
-        .day-label { display: flex; align-items: center; gap: 5px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        .intervals-container { grid-column: 1 / -1; background: #fff7ed; padding: 12px; border-radius: 8px; border: 1px solid #fed7aa; }
+        .interval-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: flex-end; flex-wrap: wrap; }
+        .btn-remove { background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+        .btn-add-interval { background: #f59e0b; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
-        button {
-            grid-column: 1 / -1;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: 800;
-            font-size: 16px;
-            cursor: pointer;
-            letter-spacing: 1px;
-        }
+        .actions { grid-column: 1 / -1; display: flex; gap: 10px; margin-top: 15px; flex-direction: column; }
+        button.main { width: 100%; padding: 15px; border-radius: 8px; font-weight: 800; cursor: pointer; border: none; font-size: 14px; text-transform: uppercase; }
+        .btn-render { background: #1e40af; color: white; }
+        .btn-pdf { background: var(--success); color: white; }
 
-        /* ÁREA DO CALENDÁRIO - FOCO NO PRINT */
-        #calendar-container {
-            width: 100%;
-            max-width: 1100px; /* Largura ideal para slide 16:9 */
-        }
-
-        .month-block {
-            background: white;
-            padding: 40px;
-            border-radius: 0; /* Quadrado fica melhor em alguns layouts de slide */
-            margin-bottom: 40px;
-            box-shadow: 0 0 40px rgba(0,0,0,0.1);
-        }
-
-        .month-header {
-            font-size: 42px;
-            font-weight: 900;
-            color: var(--text-dark);
-            margin-bottom: 20px;
-            border-left: 12px solid var(--primary);
-            padding-left: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-        }
-
-        .weekday-name {
-            background: #1e293b;
-            color: white;
-            text-align: center;
-            padding: 12px 0;
-            font-weight: 800;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .day-cell {
-            background: #f8fafc;
-            height: 110px; /* Altura fixa maior para visibilidade */
-            padding: 10px;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .day-num {
-            font-size: 22px;
-            font-weight: 800;
-            color: #cbd5e1;
-        }
-
-        /* Dia com Aula */
-        .class-day {
-            background: #eff6ff;
-            border: 2px solid var(--accent);
-        }
-        .class-day .day-num { color: var(--primary); }
+        /* Estilo do PDF e Visualização */
+        #content-to-print { width: 100%; max-width: 1050px; margin: 0 auto; background: white; }
         
-        .class-badge {
-            background: var(--primary);
-            color: white;
-            font-size: 14px;
-            font-weight: 900;
-            padding: 6px;
-            border-radius: 4px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        .summary-card {
+            background: var(--primary); color: white; padding: 25px; border-radius: 12px;
+            margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+            border-bottom: 6px solid var(--accent);
+            page-break-inside: avoid;
         }
+        .summary-item h2 { margin: 0; font-size: 11px; color: #94a3b8; text-transform: uppercase; }
+        .summary-item p { margin: 2px 0 0 0; font-size: 28px; font-weight: 900; }
+        .summary-item b { color: #facc15; }
 
-        /* Feriado */
-        .holiday-day {
-            background: #fff1f2;
-            border: 2px solid #fda4af;
+        /* Correção de quebra de página para evitar folhas em branco */
+        .month-section { 
+            page-break-inside: avoid; 
+            break-inside: avoid;
+            padding-bottom: 10px;
         }
-        .holiday-day .day-num { color: var(--holiday); }
         
-        .holiday-text {
-            color: var(--holiday);
-            font-size: 11px;
-            font-weight: 900;
-            text-align: center;
-            text-transform: uppercase;
+        .page-break-manual { 
+            page-break-before: always !important; 
         }
 
-        @media print {
-            .config-area { display: none; }
-            body { background: white; }
+        .month-title { font-size: 22px; font-weight: 900; color: #1e40af; text-transform: uppercase; margin: 15px 0 10px; border-bottom: 2px solid #e2e8f0; }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; background: #e2e8f0; border: 1px solid #e2e8f0; min-width: 600px; }
+        .wd { background: #334155; color: white; text-align: center; padding: 8px; font-weight: 800; font-size: 10px; }
+        
+        .day-cell { background: white; min-height: 85px; padding: 5px; display: flex; flex-direction: column; gap: 3px; }
+        .day-num { font-size: 16px; font-weight: 900; color: #cbd5e1; }
+        
+        .is-class { background: #eff6ff; }
+        .is-class .day-num { color: #1e40af; }
+        .tag { background: #1e40af; color: white; font-size: 8px; font-weight: bold; padding: 2px 4px; border-radius: 3px; text-align: center; line-height: 1.1; }
+        .tag-int { background: #f59e0b; }
+        
+        .is-holiday { background: #fff1f2; }
+        .is-holiday .day-num { color: var(--holiday); }
+        .holiday-txt { color: var(--holiday); font-size: 8px; font-weight: 900; text-align: center; }
+
+        /* Ajustes Mobile */
+        @media (min-width: 600px) {
+            .actions { flex-direction: row; }
+            body { padding: 20px; }
         }
+
+        @media screen and (max-width: 600px) {
+            #content-to-print { overflow-x: auto; }
+        }
+
+        @media print { .config-area { display: none; } }
     </style>
 </head>
 <body>
 
 <div class="config-area">
     <div class="input-grid">
-        <div class="field"><label>Início do Curso</label><input type="date" id="start"></div>
-        <div class="field"><label>Fim do Curso</label><input type="date" id="end"></div>
-        <div class="field"><label>Hora Início</label><input type="time" id="t1" value="19:00"></div>
-        <div class="field"><label>Hora Fim</label><input type="time" id="t2" value="22:00"></div>
+        <div class="field" style="grid-column: span 2;"><label>Título do Curso</label><input type="text" id="courseName" placeholder="Ex: AI-900"></div>
+        <div class="field"><label>Carga Horária (h)</label><input type="number" id="manualHours" placeholder="40"></div>
+        <div class="field"><label>Data Início</label><input type="date" id="start"></div>
+        <div class="field"><label>Data Fim</label><input type="date" id="end"></div>
+        <div class="field"><label>Hora Início</label><input type="time" id="t1" value="08:00"></div>
+        <div class="field"><label>Hora Fim</label><input type="time" id="t2" value="17:00"></div>
         
         <div class="days-group">
-            <label class="day-label"><input type="checkbox" value="1"> Segunda</label>
-            <label class="day-label"><input type="checkbox" value="2"> Terça</label>
-            <label class="day-label"><input type="checkbox" value="3"> Quarta</label>
-            <label class="day-label"><input type="checkbox" value="4"> Quinta</label>
-            <label class="day-label"><input type="checkbox" value="5"> Sexta</label>
-            <label class="day-label"><input type="checkbox" value="6"> Sábado</label>
-            <label class="day-label"><input type="checkbox" value="0"> Domingo</label>
+            <label class="day-label"><input type="checkbox" value="1"> Seg</label>
+            <label class="day-label"><input type="checkbox" value="2"> Ter</label>
+            <label class="day-label"><input type="checkbox" value="3"> Qua</label>
+            <label class="day-label"><input type="checkbox" value="4"> Qui</label>
+            <label class="day-label"><input type="checkbox" value="5"> Sex</label>
+            <label class="day-label"><input type="checkbox" value="6"> Sáb</label>
+            <label class="day-label"><input type="checkbox" value="0"> Dom</label>
+        </div>
+
+        <div class="intervals-container">
+            <label>Intervalos:</label>
+            <div id="intervals-list">
+                <div class="interval-row">
+                    <input type="text" class="int-name" value="Intervalo" style="flex:2; min-width: 80px;">
+                    <input type="time" class="int-start" value="12:00" style="flex:1">
+                    <input type="time" class="int-end" value="13:00" style="flex:1">
+                    <button class="btn-remove" onclick="this.parentElement.remove()">✕</button>
+                </div>
+            </div>
+            <button class="btn-add-interval" onclick="addInterval()">+ Adicionar Intervalo</button>
         </div>
 
         <div class="field" style="grid-column: span 2;">
-            <label>Feriados (Datas uma por linha: AAAA-MM-DD)</label>
-            <textarea id="holis" rows="3" placeholder="Ex: 2026-05-01"></textarea>
+            <label>Feriados (DD/MM/AAAA)</label>
+            <textarea id="holis" rows="2" placeholder="Ex: 01/05/2026"></textarea>
         </div>
 
-        <button onclick="render()">GERAR CALENDÁRIO PARA PRINT</button>
+        <div class="actions">
+            <button class="main btn-render" onclick="render()">1. Gerar Visualização</button>
+            <button class="main btn-pdf" onclick="generatePDF()">2. Salvar em PDF</button>
+        </div>
     </div>
 </div>
 
-<div id="calendar-container"></div>
+<div id="content-to-print"></div>
 
 <script>
+    function addInterval() {
+        const div = document.createElement('div');
+        div.className = 'interval-row';
+        div.innerHTML = `<input type="text" class="int-name" placeholder="Nome" style="flex:2; min-width: 80px;">
+                         <input type="time" class="int-start" style="flex:1">
+                         <input type="time" class="int-end" style="flex:1">
+                         <button class="btn-remove" onclick="this.parentElement.remove()">✕</button>`;
+        document.getElementById('intervals-list').appendChild(div);
+    }
+
+    function parseBRDate(str) {
+        const p = str.trim().split('/');
+        return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : null;
+    }
+
     function render() {
         const sVal = document.getElementById('start').value;
         const eVal = document.getElementById('end').value;
-        if(!sVal || !eVal) return alert("Preencha as datas de início e fim.");
+        const manualH = document.getElementById('manualHours').value;
+        
+        if(!sVal || !eVal || !manualH) return alert("Preencha Carga Horária, Início e Fim.");
 
+        const totalHours = parseFloat(manualH);
+        const minHours = (totalHours * 0.75).toFixed(1);
+        
         const startDate = new Date(sVal + 'T00:00:00');
         const endDate = new Date(eVal + 'T00:00:00');
-        const hTime = `${document.getElementById('t1').value} às ${document.getElementById('t2').value}`;
         const selectedDays = Array.from(document.querySelectorAll('.day-label input:checked')).map(i => parseInt(i.value));
-        const holidays = document.getElementById('holis').value.split('\n').map(x => x.trim());
+        const holidays = document.getElementById('holis').value.split('\n').map(l => parseBRDate(l)).filter(l => l);
 
-        const container = document.getElementById('calendar-container');
-        container.innerHTML = '';
+        const container = document.getElementById('content-to-print');
+        container.innerHTML = `
+            <div class="summary-card">
+                <div class="summary-item">
+                    <h2>Carga Horária Total</h2>
+                    <p>${totalHours}h</p>
+                </div>
+                <div class="summary-item">
+                    <h2>Mínimo para Aprovação (75%)</h2>
+                    <p><b>${minHours}h</b></p>
+                </div>
+                <div style="grid-column: span 2; font-size:12px; border-top:1px solid #334155; padding-top:10px; font-weight: bold;">
+                    CURSO: ${document.getElementById('courseName').value.toUpperCase() || 'CRONOGRAMA ACADÊMICO'}
+                </div>
+            </div>
+        `;
 
-        let curr = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+        let iter = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+        let monthCount = 0;
 
-        while (curr <= endDate) {
-            const y = curr.getFullYear();
-            const m = curr.getMonth();
+        while (iter <= endDate) {
+            const section = document.createElement('div');
+            // Só aplica quebra de página a partir do segundo mês para evitar folha em branco inicial
+            section.className = 'month-section' + (monthCount > 0 ? ' page-break-manual' : '');
             
-            const monthBlock = document.createElement('div');
-            monthBlock.className = 'month-block';
-            
-            const monthTitle = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(curr).toUpperCase();
-            monthBlock.innerHTML = `<div class="month-header"><span>${monthTitle}</span> <span style="font-size:14px; color:#64748b;">CRONOGRAMA DE AULAS</span></div>`;
+            const title = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(iter).toUpperCase();
+            section.innerHTML = `<div class="month-title">${title}</div>`;
 
             const grid = document.createElement('div');
             grid.className = 'calendar-grid';
+            ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'].forEach(d => grid.innerHTML += `<div class="wd">${d}</div>`);
 
-            ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].forEach(day => {
-                grid.innerHTML += `<div class="weekday-name">${day}</div>`;
-            });
+            const y = iter.getFullYear(), m = iter.getMonth();
+            const firstDay = new Date(y, m, 1).getDay();
+            const lastDay = new Date(y, m + 1, 0).getDate();
 
-            const firstDayWd = new Date(y, m, 1).getDay();
-            const daysInMonth = new Date(y, m + 1, 0).getDate();
+            for(let i=0; i<firstDay; i++) grid.innerHTML += `<div class="day-cell"></div>`;
 
-            for(let i=0; i<firstDayWd; i++) grid.innerHTML += `<div class="day-cell" style="background:transparent; border:none;"></div>`;
-
-            for(let d=1; d<=daysInMonth; d++) {
-                const dObj = new Date(y, m, d);
-                const iso = dObj.toISOString().split('T')[0];
+            for(let d=1; d<=lastDay; d++) {
+                const curr = new Date(y, m, d);
+                const iso = curr.toISOString().split('T')[0];
                 const isH = holidays.includes(iso);
-                const isC = selectedDays.includes(dObj.getDay()) && dObj >= startDate && dObj <= endDate;
+                const isC = selectedDays.includes(curr.getDay()) && curr >= startDate && curr <= endDate;
 
-                let stateClass = '';
-                let content = '';
-                if(isH) { 
-                    stateClass = 'holiday-day'; 
-                    content = '<div class="holiday-text">FERIADO</div>';
-                } else if(isC) { 
-                    stateClass = 'class-day'; 
-                    content = `<div class="class-badge">${hTime}</div>`;
+                let cls = 'day-cell' + (isH ? ' is-holiday' : isC ? ' is-class' : '');
+                let html = `<div class="day-num">${d}</div>`;
+
+                if(isH) html += `<div class="holiday-txt">FERIADO</div>`;
+                else if(isC) {
+                    html += `<div class="tag">AULA: ${document.getElementById('t1').value}-${document.getElementById('t2').value}</div>`;
+                    document.querySelectorAll('.interval-row').forEach(row => {
+                        const n = row.querySelector('.int-name').value;
+                        const s = row.querySelector('.int-start').value;
+                        const e = row.querySelector('.int-end').value;
+                        if(s && e) html += `<div class="tag tag-int">${n}: ${s}-${e}</div>`;
+                    });
                 }
-
-                grid.innerHTML += `
-                    <div class="day-cell ${stateClass}">
-                        <div class="day-num">${d}</div>
-                        ${content}
-                    </div>
-                `;
+                grid.innerHTML += `<div class="${cls}">${html}</div>`;
             }
-
-            monthBlock.appendChild(grid);
-            container.appendChild(monthBlock);
-            curr.setMonth(curr.getMonth() + 1);
+            section.appendChild(grid);
+            container.appendChild(section);
+            iter.setMonth(iter.getMonth() + 1);
+            monthCount++;
         }
+    }
+
+    function generatePDF() {
+        const element = document.getElementById('content-to-print');
+        if(!element.innerHTML) return alert("Gere a visualização primeiro!");
+        
+        const opt = {
+            margin: [10, 5, 10, 5],
+            filename: 'Cronograma_Academico.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+            pagebreak: { mode: 'css' }
+        };
+        html2pdf().set(opt).from(element).save();
     }
 </script>
 
