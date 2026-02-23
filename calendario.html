@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronograma PPT - Layout Max</title>
+    <style>
+        :root {
+            --primary: #1e40af; /* Azul forte para contraste */
+            --accent: #3b82f6;
+            --holiday: #dc2626; /* Vermelho vibrante */
+            --bg-neutral: #f1f5f9;
+            --text-dark: #0f172a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #cbd5e1; /* Fundo cinza para destacar o "card" branco do print */
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Painel de Controle - Oculto no Print se desejar */
+        .config-area {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .field { display: flex; flex-direction: column; gap: 4px; }
+        label { font-size: 12px; font-weight: bold; color: #475569; text-transform: uppercase; }
+        input, textarea { padding: 8px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 14px; }
+
+        .days-group {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .day-label { display: flex; align-items: center; gap: 5px; cursor: pointer; font-weight: 600; font-size: 14px; }
+
+        button {
+            grid-column: 1 / -1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+
+        /* ÁREA DO CALENDÁRIO - FOCO NO PRINT */
+        #calendar-container {
+            width: 100%;
+            max-width: 1100px; /* Largura ideal para slide 16:9 */
+        }
+
+        .month-block {
+            background: white;
+            padding: 40px;
+            border-radius: 0; /* Quadrado fica melhor em alguns layouts de slide */
+            margin-bottom: 40px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+        }
+
+        .month-header {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            border-left: 12px solid var(--primary);
+            padding-left: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .weekday-name {
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            padding: 12px 0;
+            font-weight: 800;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .day-cell {
+            background: #f8fafc;
+            height: 110px; /* Altura fixa maior para visibilidade */
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .day-num {
+            font-size: 22px;
+            font-weight: 800;
+            color: #cbd5e1;
+        }
+
+        /* Dia com Aula */
+        .class-day {
+            background: #eff6ff;
+            border: 2px solid var(--accent);
+        }
+        .class-day .day-num { color: var(--primary); }
+        
+        .class-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 14px;
+            font-weight: 900;
+            padding: 6px;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Feriado */
+        .holiday-day {
+            background: #fff1f2;
+            border: 2px solid #fda4af;
+        }
+        .holiday-day .day-num { color: var(--holiday); }
+        
+        .holiday-text {
+            color: var(--holiday);
+            font-size: 11px;
+            font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        @media print {
+            .config-area { display: none; }
+            body { background: white; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="config-area">
+    <div class="input-grid">
+        <div class="field"><label>Início do Curso</label><input type="date" id="start"></div>
+        <div class="field"><label>Fim do Curso</label><input type="date" id="end"></div>
+        <div class="field"><label>Hora Início</label><input type="time" id="t1" value="19:00"></div>
+        <div class="field"><label>Hora Fim</label><input type="time" id="t2" value="22:00"></div>
+        
+        <div class="days-group">
+            <label class="day-label"><input type="checkbox" value="1"> Segunda</label>
+            <label class="day-label"><input type="checkbox" value="2"> Terça</label>
+            <label class="day-label"><input type="checkbox" value="3"> Quarta</label>
+            <label class="day-label"><input type="checkbox" value="4"> Quinta</label>
+            <label class="day-label"><input type="checkbox" value="5"> Sexta</label>
+            <label class="day-label"><input type="checkbox" value="6"> Sábado</label>
+            <label class="day-label"><input type="checkbox" value="0"> Domingo</label>
+        </div>
+
+        <div class="field" style="grid-column: span 2;">
+            <label>Feriados (Datas uma por linha: AAAA-MM-DD)</label>
+            <textarea id="holis" rows="3" placeholder="Ex: 2026-05-01"></textarea>
+        </div>
+
+        <button onclick="render()">GERAR CALENDÁRIO PARA PRINT</button>
+    </div>
+</div>
+
+<div id="calendar-container"></div>
+
+<script>
+    function render() {
+        const sVal = document.getElementById('start').value;
+        const eVal = document.getElementById('end').value;
+        if(!sVal || !eVal) return alert("Preencha as datas de início e fim.");
+
+        const startDate = new Date(sVal + 'T00:00:00');
+        const endDate = new Date(eVal + 'T00:00:00');
+        const hTime = `${document.getElementById('t1').value} às ${document.getElementById('t2').value}`;
+        const selectedDays = Array.from(document.querySelectorAll('.day-label input:checked')).map(i => parseInt(i.value));
+        const holidays = document.getElementById('holis').value.split('\n').map(x => x.trim());
+
+        const container = document.getElementById('calendar-container');
+        container.innerHTML = '';
+
+        let curr = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+
+        while (curr <= endDate) {
+            const y = curr.getFullYear();
+            const m = curr.getMonth();
+            
+            const monthBlock = document.createElement('div');
+            monthBlock.className = 'month-block';
+            
+            const monthTitle = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(curr).toUpperCase();
+            monthBlock.innerHTML = `<div class="month-header"><span>${monthTitle}</span> <span style="font-size:14px; color:#64748b;">CRONOGRAMA DE AULAS</span></div>`;
+
+            const grid = document.createElement('div');
+            grid.className = 'calendar-grid';
+
+            ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].forEach(day => {
+                grid.innerHTML += `<div class="weekday-name">${day}</div>`;
+            });
+
+            const firstDayWd = new Date(y, m, 1).getDay();
+            const daysInMonth = new Date(y, m + 1, 0).getDate();
+
+            for(let i=0; i<firstDayWd; i++) grid.innerHTML += `<div class="day-cell" style="background:transparent; border:none;"></div>`;
+
+            for(let d=1; d<=daysInMonth; d++) {
+                const dObj = new Date(y, m, d);
+                const iso = dObj.toISOString().split('T')[0];
+                const isH = holidays.includes(iso);
+                const isC = selectedDays.includes(dObj.getDay()) && dObj >= startDate && dObj <= endDate;
+
+                let stateClass = '';
+                let content = '';
+                if(isH) { 
+                    stateClass = 'holiday-day'; 
+                    content = '<div class="holiday-text">FERIADO</div>';
+                } else if(isC) { 
+                    stateClass = 'class-day'; 
+                    content = `<div class="class-badge">${hTime}</div>`;
+                }
+
+                grid.innerHTML += `
+                    <div class="day-cell ${stateClass}">
+                        <div class="day-num">${d}</div>
+                        ${content}
+                    </div>
+                `;
+            }
+
+            monthBlock.appendChild(grid);
+            container.appendChild(monthBlock);
+            curr.setMonth(curr.getMonth() + 1);
+        }
+    }
+</script>
+
+</body>
+</html>
