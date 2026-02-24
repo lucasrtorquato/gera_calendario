@@ -10,6 +10,7 @@
             --primary: #000000;
             --blue-class: #1e40af;
             --holiday: #dc2626;
+            --bg-holiday: #ffa4ab;
             --bg-page: #f1f5f9;
         }
 
@@ -83,7 +84,7 @@
         .tag { background: #1e40af; color: white; font-size: 9px; font-weight: bold; padding: 3px 4px; border-radius: 3px; text-align: center; margin-top: 2px; }
         .tag-int { background: #333; border: 0.5px solid white; }
         
-        .is-holiday { background: #fff1f2; }
+        .is-holiday { background: var(--bg-holiday); }
         .is-holiday .day-num { color: var(--holiday); }
         .holiday-txt { color: var(--holiday); font-size: 9px; font-weight: 900; text-align: center; border: 1px solid var(--holiday); }
 
@@ -96,7 +97,7 @@
 
 <div class="config-area">
     <div class="input-grid">
-        <div class="field" style="grid-column: span 2;"><label>Título do Curso</label><input type="text" id="courseName" placeholder="Ex: AI-900"></div>
+        <div class="field" style="grid-column: span 5;"><label>Título do Curso</label><input type="text" id="courseName" placeholder="Ex: AI-900"></div>
         <div class="field"><label>Carga Horária (h)</label><input type="number" id="manualHours" placeholder="40"></div>
         <div class="field"><label>Início</label><input type="date" id="start"></div>
         <div class="field"><label>Fim</label><input type="date" id="end"></div>
@@ -126,9 +127,9 @@
             <button class="btn-add-interval" onclick="addInterval()">+ Adicionar</button>
         </div>
 
-        <div class="field" style="grid-column: span 2;">
+        <div class="field" style="grid-column: span 5;">
             <label>Feriados (DD/MM/AAAA)</label>
-            <textarea id="holis" rows="2" placeholder="Ex: 01/01/2026"></textarea>
+            <textarea id="holis" rows="2" placeholder="Ex: 01/01/2026 -> separar por linha"></textarea>
         </div>
 
         <div class="actions">
